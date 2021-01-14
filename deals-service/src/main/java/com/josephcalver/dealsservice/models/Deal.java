@@ -5,12 +5,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "deals")
 public class Deal {
 
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "deal_id", nullable = false)
     private String dealId;
 
     @Column(name = "company_id", nullable = false)
@@ -25,8 +27,8 @@ public class Deal {
     @Column(name = "origination_date", nullable = false)
     private String originationDate;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+    @Column(name = "deal_status", nullable = false)
+    private String dealStatus;
 
     @Column(name = "fund_investing", nullable = false)
     private String fundInvesting;
@@ -37,25 +39,25 @@ public class Deal {
     @Column(name = "equity_required", nullable = false)
     private int equityRequired;
 
-    @Column(name = "currency", nullable = false)
-    private String currency;
+    @Column(name = "deal_currency", nullable = false)
+    private String dealCurrency;
 
     public Deal() {
 
     }
 
-    public Deal(String dealId, String companyId, String dealType, String dealName, String originationDate,
-                String status, String fundInvesting, String dealTeamLead, int equityRequired, String currency) {
+    public Deal(String dealId, String companyId, String dealName, String dealType, String originationDate,
+                String dealStatus, String fundInvesting, String dealTeamLead, int equityRequired, String dealCurrency) {
         this.dealId = dealId;
         this.companyId = companyId;
-        this.dealType = dealType;
         this.dealName = dealName;
+        this.dealType = dealType;
         this.originationDate = originationDate;
-        this.status = status;
+        this.dealStatus = dealStatus;
         this.fundInvesting = fundInvesting;
         this.dealTeamLead = dealTeamLead;
         this.equityRequired = equityRequired;
-        this.currency = currency;
+        this.dealCurrency = dealCurrency;
     }
 
     public String getDealId() {
@@ -99,12 +101,12 @@ public class Deal {
         this.originationDate = originationDate;
     }
 
-    public String getStatus() {
-        return status;
+    public String getDealStatus() {
+        return dealStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDealStatus(String dealStatus) {
+        this.dealStatus = dealStatus;
     }
 
     public String getFundInvesting() {
@@ -131,12 +133,12 @@ public class Deal {
         this.equityRequired = equityRequired;
     }
 
-    public String getCurrency() {
-        return currency;
+    public String getDealCurrency() {
+        return dealCurrency;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setDealCurrency(String dealCurrency) {
+        this.dealCurrency = dealCurrency;
     }
 
     @Override

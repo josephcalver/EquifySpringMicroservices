@@ -1,9 +1,11 @@
 package com.josephcalver.dealsservice.repositories;
 
 import com.josephcalver.dealsservice.models.Deal;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface DealsRepository extends JpaRepository<Deal, Long> {
+@Repository
+public interface DealsRepository extends CrudRepository<Deal, String> {
 
     public Deal findByDealId(String dealId);
     public void deleteByDealId(String dealId);

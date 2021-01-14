@@ -6,8 +6,6 @@ import com.josephcalver.dealsservice.repositories.DealsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class DealsService {
 
@@ -18,9 +16,8 @@ public class DealsService {
         this.dealsRepository = dealsRepository;
     }
 
-    public List<Deal> getAllDeals() {
-        List<Deal> deals = dealsRepository.findAll();
-        return deals;
+    public Iterable<Deal> getAllDeals() {
+        return dealsRepository.findAll();
     }
 
     public Deal getDeal(String dealId) {
@@ -42,11 +39,11 @@ public class DealsService {
         existingDeal.setDealName(deal.getDealName());
         existingDeal.setDealType(deal.getDealType());
         existingDeal.setOriginationDate(deal.getOriginationDate());
-        existingDeal.setStatus(deal.getStatus());
+        existingDeal.setDealStatus(deal.getDealStatus());
         existingDeal.setFundInvesting(deal.getFundInvesting());
         existingDeal.setDealTeamLead(deal.getDealTeamLead());
         existingDeal.setEquityRequired(deal.getEquityRequired());
-        existingDeal.setCurrency(deal.getCurrency());
+        existingDeal.setDealCurrency(deal.getDealCurrency());
 
         return dealsRepository.save(existingDeal);
     }
