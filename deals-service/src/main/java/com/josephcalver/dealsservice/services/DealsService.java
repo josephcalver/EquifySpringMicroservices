@@ -1,6 +1,6 @@
-package com.josephcalver.dealsservice.Services;
+package com.josephcalver.dealsservice.services;
 
-import com.josephcalver.dealsservice.Exceptions.DealNotFoundException;
+import com.josephcalver.dealsservice.exceptions.DealNotFoundException;
 import com.josephcalver.dealsservice.models.Deal;
 import com.josephcalver.dealsservice.repositories.DealsRepository;
 import org.springframework.beans.factory.annotation.Autowired;

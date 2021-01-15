@@ -1,4 +1,4 @@
-package com.josephcalver.dealsservice.Exceptions;
+package com.josephcalver.dealsservice.exceptions;
 
 public class DealNotFoundException extends RuntimeException {
 

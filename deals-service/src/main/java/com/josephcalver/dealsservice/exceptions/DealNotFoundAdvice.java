@@ -1,4 +1,4 @@
-package com.josephcalver.dealsservice.Exceptions;
+package com.josephcalver.dealsservice.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
