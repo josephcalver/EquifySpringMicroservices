@@ -6,5 +6,6 @@ spring:
   cloud:
     config:
       server:
-        native:
-          searchLocations: file:///Users/CaolanandJo/IdeaProjects/equify-microservices-parent/config-server/src/main/resources/config/dealsservice
+        git:
+          uri: https://github.com/josephcalver/EquifyConfigRepo
+          searchPaths: dealsservice
