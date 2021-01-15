@@ -1,5 +1,0 @@
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver #com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=none
-spring.datasource.url=jdbc:mysql://equify@localhost:3306/equify_db
-spring.datasource.username=equify
-spring.datasource.password=Equ!fy
