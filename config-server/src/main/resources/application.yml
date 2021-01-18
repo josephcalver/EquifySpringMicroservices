@@ -1,0 +1,42 @@
+server:
+  port: 8888
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/josephcalver/EquifyConfigRepo.git
+          searchPaths: dealsservice
+  security:
+    user:
+      name: root
+      password: password
+
+#          username: josephcalver
+#          password: Bluewater1985
+#          password: ae3b3e9ea4eb2b38564b6edb7bb3a954cfeee0bb
+
+#server:
+#  port: 8888
+#spring:
+#  cloud:
+#    config:
+#      server:
+#        encrypt.enabled: false
+#        git:
+#          uri: https://github.com/carnellj/config-repo/
+#          searchPaths: licensingservice,organizationservice
+#          username: native-cloud-apps
+#          password: 0ffended
+
+#server:
+#  port: 8888
+#spring:
+#  profiles:
+#    active: native
+#  cloud:
+#    config:
+#      server:
+#        native:
+#          searchLocations: file:///Users/CaolanandJo/IdeaProjects/equify-microservices-parent/config-server/src/main/resources/config/dealsservice
+#
