@@ -12,10 +12,6 @@ spring:
       name: root
       password: password
 
-#          username: josephcalver
-#          password: Bluewater1985
-#          password: ae3b3e9ea4eb2b38564b6edb7bb3a954cfeee0bb
-
 #server:
 #  port: 8888
 #spring:
