@@ -40,7 +40,7 @@ public class DealsController {
         return dealsService.updateDeal(deal, dealId);
     }
 
-    @DeleteMapping("/v1/deals/{dealId")
+    @DeleteMapping("/v1/deals/{dealId}")
     public void deleteDeal(@PathVariable String dealId) {
         dealsService.deleteDeal(dealId);
     }
