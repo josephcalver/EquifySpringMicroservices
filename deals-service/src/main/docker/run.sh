@@ -1,0 +1,1 @@
+java -jar /usr/local/dealsservice/deals-service-0.0.1-SNAPSHOT.jar

@@ -1,3 +1,6 @@
+#spring.application.name=dealsservice
+#spring.cloud.config.uri=http://localhost:8888
+
 spring:
   application:
     name: dealsservice
@@ -6,3 +9,12 @@ spring:
   cloud:
     config:
       uri: http://localhost:8888
+      username: root
+      password: password
+    refresh:
+      enabled: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
