@@ -5,6 +5,8 @@ import com.josephcalver.dealsservice.exceptions.DealNotFoundException;
 import com.josephcalver.dealsservice.models.Company;
 import com.josephcalver.dealsservice.models.Deal;
 import com.josephcalver.dealsservice.repositories.DealsRepository;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +19,9 @@ public class DealsService {
     @Autowired
     private CompaniesFeignClient companiesFeignClient;
 
-    public DealsService(DealsRepository dealsRepository) {
-        this.dealsRepository = dealsRepository;
-    }
+//    public DealsService(DealsRepository dealsRepository) {
+//        this.dealsRepository = dealsRepository;
+//    }
 
     public Iterable<Deal> getAllDeals() {
         return dealsRepository.findAll();
@@ -48,11 +50,17 @@ public class DealsService {
         return deal;
     }
 
+    @CircuitBreaker(name = "companiesservice", fallbackMethod = "fallback")
+    @Bulkhead(name = "companiesservice", type = Bulkhead.Type.THREADPOOL)
     private Company retrieveCompanyInfo(String companyId) {
 
         Company company = companiesFeignClient.getCompany(companyId);
 
         return company;
+    }
+
+    private Company fallback(String companyId, RuntimeException e) {
+        return null;
     }
 
     public Deal createDeal(Deal deal) {
