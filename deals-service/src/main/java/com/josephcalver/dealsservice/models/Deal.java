@@ -2,10 +2,8 @@ package com.josephcalver.dealsservice.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "deals")
@@ -42,6 +40,24 @@ public class Deal {
     @Column(name = "deal_currency", nullable = false)
     private String dealCurrency;
 
+    @Transient
+    private String companyName;
+
+    @Transient
+    private int founded;
+
+    @Transient
+    private String country;
+
+    @Transient
+    private String region;
+
+    @Transient
+    private String sector;
+
+    @Transient
+    private BigDecimal enterpriseValue;
+
     public Deal() {
 
     }
@@ -58,6 +74,27 @@ public class Deal {
         this.dealTeamLead = dealTeamLead;
         this.equityRequired = equityRequired;
         this.dealCurrency = dealCurrency;
+    }
+
+    public Deal(String dealId, String companyId, String dealName, String dealType, String originationDate,
+                String dealStatus, String fundInvesting, String dealTeamLead, int equityRequired, String dealCurrency,
+                String companyName, int founded, String country, String region, String sector, BigDecimal enterpriseValue) {
+        this.dealId = dealId;
+        this.companyId = companyId;
+        this.dealName = dealName;
+        this.dealType = dealType;
+        this.originationDate = originationDate;
+        this.dealStatus = dealStatus;
+        this.fundInvesting = fundInvesting;
+        this.dealTeamLead = dealTeamLead;
+        this.equityRequired = equityRequired;
+        this.dealCurrency = dealCurrency;
+        this.companyName = companyName;
+        this.founded = founded;
+        this.country = country;
+        this.region = region;
+        this.sector = sector;
+        this.enterpriseValue = enterpriseValue;
     }
 
     public String getDealId() {
@@ -139,6 +176,54 @@ public class Deal {
 
     public void setDealCurrency(String dealCurrency) {
         this.dealCurrency = dealCurrency;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public int getFounded() {
+        return founded;
+    }
+
+    public void setFounded(int founded) {
+        this.founded = founded;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
+
+    public BigDecimal getEnterpriseValue() {
+        return enterpriseValue;
+    }
+
+    public void setEnterpriseValue(BigDecimal enterpriseValue) {
+        this.enterpriseValue = enterpriseValue;
     }
 
     @Override

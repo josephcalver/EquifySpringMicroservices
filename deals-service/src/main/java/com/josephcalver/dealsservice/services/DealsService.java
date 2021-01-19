@@ -1,6 +1,8 @@
 package com.josephcalver.dealsservice.services;
 
+import com.josephcalver.dealsservice.clients.CompaniesFeignClient;
 import com.josephcalver.dealsservice.exceptions.DealNotFoundException;
+import com.josephcalver.dealsservice.models.Company;
 import com.josephcalver.dealsservice.models.Deal;
 import com.josephcalver.dealsservice.repositories.DealsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,9 @@ public class DealsService {
     @Autowired
     private DealsRepository dealsRepository;
 
+    @Autowired
+    private CompaniesFeignClient companiesFeignClient;
+
     public DealsService(DealsRepository dealsRepository) {
         this.dealsRepository = dealsRepository;
     }
@@ -21,7 +26,33 @@ public class DealsService {
     }
 
     public Deal getDeal(String dealId) {
-        return dealsRepository.findByDealId(dealId);
+
+        Deal deal = dealsRepository.findByDealId(dealId);
+
+        if (deal != null) {
+
+            Company company = retrieveCompanyInfo(deal.getCompanyId());
+
+            if (company != null) {
+
+                deal.setCompanyName(company.getCompanyName());
+                deal.setFounded(company.getFounded());
+                deal.setCountry(company.getCountry());
+                deal.setRegion(company.getRegion());
+                deal.setSector(company.getSector());
+                deal.setEnterpriseValue(company.getEnterpriseValue());
+            }
+
+        }
+
+        return deal;
+    }
+
+    private Company retrieveCompanyInfo(String companyId) {
+
+        Company company = companiesFeignClient.getCompany(companyId);
+
+        return company;
     }
 
     public Deal createDeal(Deal deal) {

@@ -1,9 +1,10 @@
 package com.josephcalver.dealsservice.controllers;
 
 import com.josephcalver.dealsservice.exceptions.DealNotFoundException;
-import com.josephcalver.dealsservice.services.DealsService;
 import com.josephcalver.dealsservice.models.Deal;
+import com.josephcalver.dealsservice.services.DealsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,8 +27,9 @@ public class DealsController {
 
         if (deal == null) {
             throw new DealNotFoundException(dealId);
-        } else
-        return dealsService.getDeal(dealId);
+        }
+
+        return deal;
     }
 
     @PostMapping("/v1/deals")
@@ -41,6 +43,7 @@ public class DealsController {
     }
 
     @DeleteMapping("/v1/deals/{dealId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDeal(@PathVariable String dealId) {
         dealsService.deleteDeal(dealId);
     }
