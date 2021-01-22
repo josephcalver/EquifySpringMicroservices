@@ -1,8 +1,8 @@
-package com.josephcalver.dealsservice.controllers;
+package com.josephcalver.dealsservice.controller;
 
-import com.josephcalver.dealsservice.exceptions.DealNotFoundException;
-import com.josephcalver.dealsservice.models.Deal;
-import com.josephcalver.dealsservice.services.DealsService;
+import com.josephcalver.dealsservice.exception.DealNotFoundException;
+import com.josephcalver.dealsservice.model.Deal;
+import com.josephcalver.dealsservice.service.DealsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

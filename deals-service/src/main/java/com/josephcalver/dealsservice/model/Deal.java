@@ -1,4 +1,4 @@
-package com.josephcalver.dealsservice.models;
+package com.josephcalver.dealsservice.model;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

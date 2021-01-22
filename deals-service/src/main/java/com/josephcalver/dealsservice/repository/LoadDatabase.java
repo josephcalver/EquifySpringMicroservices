@@ -1,4 +1,4 @@
-package com.josephcalver.dealsservice.repositories;
+package com.josephcalver.dealsservice.repository;
 
 //@Configuration
 //public class LoadDatabase {

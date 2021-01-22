@@ -1,0 +1,92 @@
+version: '2.1'
+services:
+
+  database:
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "equify_db"
+    volumes:
+      - ./equify_db.sql:/docker-entrypoint-initdb.d/equify_db.sql
+#      - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  eurekaserver:
+    image: equify/eureka-server:0.0.1-SNAPSHOT
+    ports:
+      - "8761:8761"
+    depends_on:
+      database:
+        condition: service_healthy
+#      configserver:
+#        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "eurekaserver"
+
+  configserver:
+    image: equify/config-server:0.0.1-SNAPSHOT
+    ports:
+      - "8888:8888"
+#    environment:
+#      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
+    depends_on:
+      database:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_started
+    command: sh -c "/wait && java -jar /app.jar"
+    environment:
+      - WAIT_HOSTS=eurekaserver:8761
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=2
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+    networks:
+      backend:
+        aliases:
+          - "configserver"
+
+  dealsservice:
+    image: equify/deals-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    command: sh -c "/wait && java -jar /app.jar"
+    environment:
+      PROFILE: "default"
+      CONFIGSERVER_URI: "http://configserver:8888"
+      CONFIGSERVER_PORT:   "8888"
+      DATABASESERVER_PORT: "5433"
+      ENCRYPT_KEY:       "IMSYMMETRIC"
+      WAIT_HOSTS: eurekaserver:8761
+      WAIT_BEFORE_HOSTS: 30
+      WAIT_HOSTS_TIMEOUT: 300
+      WAIT_SLEEP_INTERVAL: 2
+      WAIT_HOST_CONNECT_TIMEOUT: 20
+
+    networks:
+      backend:
+        aliases:
+          - "dealsservice"
+
+networks:
+  backend:
+    driver: bridge

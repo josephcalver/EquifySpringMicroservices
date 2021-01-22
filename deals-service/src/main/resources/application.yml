@@ -1,17 +1,3 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://equify@localhost:3306/equify_db
-    username: equify
-    password: Equ!fy
-  jpa:
-    hibernate:
-      ddl-auto: none
-
-  # for some reason the bootstrap.yml file is not being read, so repeating app name here temporarily
-  application:
-    name: dealsservice
-
 eureka:
   instance:
     preferIpAddress: true
@@ -19,7 +5,9 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+#      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eurekaserver:8761/eureka/
+
 
 resilience4j.circuitbreaker:
   instances:

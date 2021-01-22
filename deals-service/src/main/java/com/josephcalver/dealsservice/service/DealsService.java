@@ -1,10 +1,10 @@
-package com.josephcalver.dealsservice.services;
+package com.josephcalver.dealsservice.service;
 
-import com.josephcalver.dealsservice.clients.CompaniesFeignClient;
-import com.josephcalver.dealsservice.exceptions.DealNotFoundException;
-import com.josephcalver.dealsservice.models.Company;
-import com.josephcalver.dealsservice.models.Deal;
-import com.josephcalver.dealsservice.repositories.DealsRepository;
+import com.josephcalver.dealsservice.client.CompaniesFeignClient;
+import com.josephcalver.dealsservice.exception.DealNotFoundException;
+import com.josephcalver.dealsservice.model.Company;
+import com.josephcalver.dealsservice.model.Deal;
+import com.josephcalver.dealsservice.repository.DealsRepository;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;

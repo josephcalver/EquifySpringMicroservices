@@ -1,6 +1,6 @@
-package com.josephcalver.dealsservice.clients;
+package com.josephcalver.dealsservice.client;
 
-import com.josephcalver.dealsservice.models.Company;
+import com.josephcalver.dealsservice.model.Company;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
