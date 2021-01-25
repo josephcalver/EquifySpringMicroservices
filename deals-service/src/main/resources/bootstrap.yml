@@ -8,7 +8,6 @@ spring:
 #      uri: http://localhost:8888
       uri: http://configserver:8888
 
-
 #      uri: http://configserver:8888
 #      username: root
 #      password: password

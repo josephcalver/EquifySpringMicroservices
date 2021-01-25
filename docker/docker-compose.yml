@@ -40,8 +40,6 @@ services:
     image: equify/config-server:0.0.1-SNAPSHOT
     ports:
       - "8888:8888"
-#    environment:
-#      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
     depends_on:
       database:
         condition: service_healthy
@@ -49,9 +47,10 @@ services:
         condition: service_started
     command: sh -c "/wait && java -jar /app.jar"
     environment:
+      - ENCRYPT_KEY=fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
       - WAIT_HOSTS=eurekaserver:8761
       - WAIT_HOSTS_TIMEOUT=300
-      - WAIT_SLEEP_INTERVAL=2
+      - WAIT_SLEEP_INTERVAL=5
       - WAIT_HOST_CONNECT_TIMEOUT=30
     networks:
       backend:
@@ -75,9 +74,8 @@ services:
       CONFIGSERVER_URI: "http://configserver:8888"
       CONFIGSERVER_PORT:   "8888"
       DATABASESERVER_PORT: "5433"
-      ENCRYPT_KEY:       "IMSYMMETRIC"
-      WAIT_HOSTS: eurekaserver:8761
-      WAIT_BEFORE_HOSTS: 30
+      ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+      WAIT_BEFORE_HOSTS: 20
       WAIT_HOSTS_TIMEOUT: 300
       WAIT_SLEEP_INTERVAL: 2
       WAIT_HOST_CONNECT_TIMEOUT: 20

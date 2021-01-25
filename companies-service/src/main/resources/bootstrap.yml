@@ -6,4 +6,4 @@ spring:
       default
   cloud:
     config:
-      enabled: true
+      enabled: false
