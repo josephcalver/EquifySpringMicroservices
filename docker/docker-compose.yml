@@ -26,9 +26,9 @@ services:
     image: equify/eureka-server:0.0.1-SNAPSHOT
     ports:
       - "8761:8761"
-    depends_on:
-      database:
-        condition: service_healthy
+#    depends_on:
+#      database:
+#        condition: service_healthy
 #      configserver:
 #        condition: service_started
     networks:
@@ -41,13 +41,14 @@ services:
     ports:
       - "8888:8888"
     depends_on:
-      database:
-        condition: service_healthy
+#      database:
+#        condition: service_healthy
       eurekaserver:
         condition: service_started
     command: sh -c "/wait && java -jar /app.jar"
     environment:
       - ENCRYPT_KEY=fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+#      - WAIT_BEFORE_HOSTS=5
       - WAIT_HOSTS=eurekaserver:8761
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=5
@@ -66,24 +67,54 @@ services:
         condition: service_healthy
       configserver:
         condition: service_started
-      eurekaserver:
-        condition: service_started
+#      eurekaserver:
+#        condition: service_started
     command: sh -c "/wait && java -jar /app.jar"
     environment:
-      PROFILE: "default"
-      CONFIGSERVER_URI: "http://configserver:8888"
-      CONFIGSERVER_PORT:   "8888"
-      DATABASESERVER_PORT: "5433"
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+#      CONFIGSERVER_PORT:   "8888"
+#      DATABASESERVER_PORT: "5433"
       ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
       WAIT_BEFORE_HOSTS: 20
       WAIT_HOSTS_TIMEOUT: 300
       WAIT_SLEEP_INTERVAL: 2
       WAIT_HOST_CONNECT_TIMEOUT: 20
-
     networks:
       backend:
         aliases:
           - "dealsservice"
+
+  companiesservice:
+    image: equify/companies-service:0.0.1-SNAPSHOT
+    ports:
+      - "8085:8085"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    command: sh -c "/wait && java -jar /app.jar"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+#      CONFIGSERVER_URI: "http://configserver:8888"
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+      #      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
+#      CONFIGSERVER_PORT:   "8888"
+#      DATABASESERVER_PORT: "5433"
+      ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+      WAIT_BEFORE_HOSTS: 20
+      WAIT_HOSTS_TIMEOUT: 300
+      WAIT_SLEEP_INTERVAL: 2
+      WAIT_HOST_CONNECT_TIMEOUT: 20
+    networks:
+      backend:
+        aliases:
+          - "companiesservice"
 
 networks:
   backend:

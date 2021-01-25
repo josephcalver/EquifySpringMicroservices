@@ -2,8 +2,13 @@ spring:
   application:
     name: companiesservice
   profiles:
-    active:
-      default
+    active: default
   cloud:
     config:
-      enabled: false
+      uri: http://localhost:8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
