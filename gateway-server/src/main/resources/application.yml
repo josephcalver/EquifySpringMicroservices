@@ -1,6 +1,32 @@
 server:
   port: 5555
 
+spring:
+  application:
+    name: gatewayserver
+  cloud:
+    gateway:
+#      routes:
+#        - id: dealsservice
+#          uri: lb://dealsservice
+#          predicates:
+#            - Path=/deals/**
+#          filters:
+#            - RewritePath=/deals/(?<path>.*), /$\{path}
+#            - RemoveRequestHeader= Cookie,Set-Cookie
+#        - id: licensing-service
+#          uri: lb://licensing-service
+#          predicates:
+#            - Path=/license/**
+#          filters:
+#            - RewritePath=/license/(?<path>.*), /$\{path}
+#            - RemoveRequestHeader= Cookie,Set-Cookie
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+
 eureka:
   instance:
     preferIpAddress: true
@@ -10,15 +36,14 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
-spring:
-  application:
-    name: gatewayserver
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+
 #  cloud:
 #    gateway:
 #      routes:

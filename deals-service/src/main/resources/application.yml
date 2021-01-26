@@ -1,6 +1,12 @@
 server:
   port: 8080
 
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.josephcalver: DEBUG
+
 eureka:
   instance:
     preferIpAddress: true

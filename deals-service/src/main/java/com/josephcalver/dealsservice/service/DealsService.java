@@ -5,10 +5,13 @@ import com.josephcalver.dealsservice.exception.DealNotFoundException;
 import com.josephcalver.dealsservice.model.Company;
 import com.josephcalver.dealsservice.model.Deal;
 import com.josephcalver.dealsservice.repository.DealsRepository;
+import com.josephcalver.dealsservice.utils.UserContextHolder;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,9 @@ public class DealsService {
     @Autowired
     private CompaniesFeignClient companiesFeignClient;
 
+    private static final Logger logger = LoggerFactory.getLogger(DealsService.class);
+
+
 //    public DealsService(DealsRepository dealsRepository) {
 //        this.dealsRepository = dealsRepository;
 //    }
@@ -31,6 +37,8 @@ public class DealsService {
     @CircuitBreaker(name = "dealsService", fallbackMethod = "dealsDataUnavailable")
     @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "dealsDataUnavailable")
     public Iterable<Deal> getAllDeals() {
+        logger.debug("getAllDeals - Correlation id: {}",
+                UserContextHolder.getContext().getCorrelationId());
         return dealsRepository.findAll();
     }
 
@@ -45,6 +53,9 @@ public class DealsService {
     @CircuitBreaker(name = "dealsService", fallbackMethod = "dealDataUnavailable")
     @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "dealDataUnavailable")
     public Deal getDeal(String dealId) {
+
+        logger.debug("getDeal - Correlation id: {}",
+                UserContextHolder.getContext().getCorrelationId());
 
         Deal deal = dealsRepository.findByDealId(dealId);
 
