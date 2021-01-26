@@ -116,6 +116,34 @@ services:
         aliases:
           - "companiesservice"
 
+  gatewayserver:
+    image: equify/gateway-server:0.0.1-SNAPSHOT
+    ports:
+      - "5555:5555"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    command: sh -c "/wait && java -jar /app.jar"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8761/eureka/
+      ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+      #      EUREKASERVER_PORT: "8070"
+      #      CONFIGSERVER_PORT: "8071"
+      WAIT_BEFORE_HOSTS: 30
+      WAIT_HOSTS_TIMEOUT: 300
+      WAIT_SLEEP_INTERVAL: 2
+      WAIT_HOST_CONNECT_TIMEOUT: 20
+    networks:
+      backend:
+        aliases:
+          - "gatewayserver"
+
 networks:
   backend:
     driver: bridge
