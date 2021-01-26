@@ -7,8 +7,13 @@ import com.josephcalver.dealsservice.model.Deal;
 import com.josephcalver.dealsservice.repository.DealsRepository;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DealsService {
@@ -23,10 +28,22 @@ public class DealsService {
 //        this.dealsRepository = dealsRepository;
 //    }
 
+    @CircuitBreaker(name = "dealsService", fallbackMethod = "dealsDataUnavailable")
+    @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "dealsDataUnavailable")
     public Iterable<Deal> getAllDeals() {
         return dealsRepository.findAll();
     }
 
+    private Iterable<Deal> dealsDataUnavailable() {
+        Deal dummyDeal = new Deal();
+        dummyDeal.setCompanyName("Deals Service data is currently unavailable");
+        List<Deal> dummyList = new ArrayList<Deal>();
+        dummyList.add(dummyDeal);
+        return dummyList;
+    }
+
+    @CircuitBreaker(name = "dealsService", fallbackMethod = "dealDataUnavailable")
+    @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "dealDataUnavailable")
     public Deal getDeal(String dealId) {
 
         Deal deal = dealsRepository.findByDealId(dealId);
@@ -50,8 +67,16 @@ public class DealsService {
         return deal;
     }
 
-    @CircuitBreaker(name = "companiesservice", fallbackMethod = "fallback")
-    @Bulkhead(name = "companiesservice", type = Bulkhead.Type.THREADPOOL)
+    private Deal dealDataUnavailable() {
+        Deal dummy = new Deal();
+        dummy.setCompanyName("Deal Service data is currently unavailable");
+        return dummy;
+    }
+
+    @Retry(name = "retryCompaniesService", fallbackMethod = "companiesServiceUnavailable")
+    @RateLimiter(name = "rateLimitCompaniesService", fallbackMethod = "companiesServiceUnavailable")
+    @CircuitBreaker(name = "companiesService", fallbackMethod = "companiesServiceUnavailable")
+    @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companiesServiceUnavailable")
     private Company retrieveCompanyInfo(String companyId) {
 
         Company company = companiesFeignClient.getCompany(companyId);
@@ -59,14 +84,20 @@ public class DealsService {
         return company;
     }
 
-    private Company fallback(String companyId, RuntimeException e) {
-        return null;
+    private Company companiesServiceUnavailable() {
+        Company dummy = new Company();
+        dummy.setCompanyName("The Companies Service is currently unavailable");
+        return dummy;
     }
 
+    @CircuitBreaker(name = "dealsService", fallbackMethod = "dealDataUnavailable")
+    @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "dealDataUnavailable")
     public Deal createDeal(Deal deal) {
         return dealsRepository.save(deal);
     }
 
+    @CircuitBreaker(name = "dealsService", fallbackMethod = "dealDataUnavailable")
+    @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "dealDataUnavailable")
     public Deal updateDeal(Deal deal, String dealId) {
 
         Deal existingDeal = dealsRepository.findByDealId(dealId);
@@ -87,7 +118,10 @@ public class DealsService {
         return dealsRepository.save(existingDeal);
     }
 
+    @CircuitBreaker(name = "dealsService")
+    @Bulkhead(name = "bulkheadDealsService", type = Bulkhead.Type.THREADPOOL)
     public void deleteDeal(String dealId) {
         dealsRepository.deleteByDealId(dealId);
     }
+
 }

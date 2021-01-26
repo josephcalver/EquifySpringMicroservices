@@ -21,6 +21,7 @@
 		<!--		<spring-cloud.version>2020.0.0</spring-cloud.version>-->
 		<spring-cloud.version>Hoxton.SR1</spring-cloud.version>
 		<docker.image.prefix>equify</docker.image.prefix>
+		<resilience4j.version>1.6.0</resilience4j.version>
 	</properties>
 
 	<dependencies>
@@ -78,15 +79,27 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+			<version>${resilience4j.version}</version>
+			<type>pom</type>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.cloud</groupId>-->
+<!--			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>-->
+<!--		</dependency>-->
+
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-circuitbreaker</artifactId>
+			<version>${resilience4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
-			<artifactId>resilience4j-spring-boot2</artifactId>
-			<version>1.6.0</version>
-			<type>pom</type>
+			<artifactId>resilience4j-timelimiter</artifactId>
+			<version>${resilience4j.version}</version>
 		</dependency>
 
 		<dependency>

@@ -13,6 +13,46 @@ eureka:
 
 resilience4j.circuitbreaker:
   instances:
-    companiesservice:
+    dealsService:
       registerHealthIndicator: true
-      slidingWindowSize: 100
+      ringBufferSizeInClosedState: 5
+      ringBufferSizeInHalfOpenState: 3
+      waitDurationInOpenState: 10000
+      failureRateThreshold: 20
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+        - org.springframework.web.client.ResourceAccessException
+    companiesService:
+      registerHealthIndicator: true
+      ringBufferSizeInClosedState: 5
+      ringBufferSizeInHalfOpenState: 3
+      waitDurationInOpenState: 20000
+      failureRateThreshold: 20
+
+resilience4j.ratelimiter:
+  instances:
+    rateLimitCompaniesService:
+      limitForPeriod: 5
+      limitRefreshPeriod: 5000
+      timeoutDuration: 1000
+
+resilience4j.retry:
+  instances:
+    retryCompaniesService:
+      maxRetryAttempts: 5
+      waitDuration: 10000
+      retry-exceptions:
+        - java.util.concurrent.TimeoutException
+
+resilience4j.thread-pool-bulkhead:
+  instances:
+    bulkheadDealsService:
+      maxThreadPoolSize: 1
+      coreThreadPoolSize: 5
+      queueCapacity: 10
+    bulkheadCompaniesService:
+      maxThreadPoolSize: 1
+      coreThreadPoolSize: 5
+      queueCapacity: 10
