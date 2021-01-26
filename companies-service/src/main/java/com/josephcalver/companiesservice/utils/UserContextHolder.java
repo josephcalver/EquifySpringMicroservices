@@ -1,4 +1,4 @@
-package com.josephcalver.dealsservice.utils;
+package com.josephcalver.companiesservice.utils;
 
 import org.springframework.util.Assert;
 
@@ -6,7 +6,7 @@ public class UserContextHolder {
 
     private static final ThreadLocal<UserContext> userContext = new ThreadLocal<UserContext>();
 
-    public static final UserContext getContext() {
+    public static final UserContext getContext(){
 
         UserContext context = userContext.get();
 
@@ -23,8 +23,7 @@ public class UserContextHolder {
         userContext.set(context);
     }
 
-    public static final UserContext createEmptyContext() {
+    public static final UserContext createEmptyContext(){
         return new UserContext();
     }
-
 }

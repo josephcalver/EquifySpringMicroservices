@@ -1,6 +1,8 @@
 package com.josephcalver.dealsservice.service;
 
+import com.josephcalver.dealsservice.client.CompaniesDiscoveryClient;
 import com.josephcalver.dealsservice.client.CompaniesFeignClient;
+import com.josephcalver.dealsservice.client.CompaniesRestTemplateClient;
 import com.josephcalver.dealsservice.exception.DealNotFoundException;
 import com.josephcalver.dealsservice.model.Company;
 import com.josephcalver.dealsservice.model.Deal;
@@ -23,6 +25,12 @@ public class DealsService {
 
     @Autowired
     private DealsRepository dealsRepository;
+
+    @Autowired
+    private CompaniesRestTemplateClient companiesRestTemplateClient;
+
+    @Autowired
+    CompaniesDiscoveryClient companiesDiscoveryClient;
 
     @Autowired
     private CompaniesFeignClient companiesFeignClient;
@@ -90,7 +98,8 @@ public class DealsService {
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companiesServiceUnavailable")
     private Company retrieveCompanyInfo(String companyId) {
 
-        Company company = companiesFeignClient.getCompany(companyId);
+//        Company company = companiesFeignClient.getCompany(companyId);
+        Company company = companiesDiscoveryClient.getCompany(companyId);
 
         return company;
     }
