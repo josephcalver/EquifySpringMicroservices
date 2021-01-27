@@ -1,4 +1,9 @@
 version: '2.1'
+
+volumes:
+  postgres_local:
+    driver: local
+
 services:
 
   database:
@@ -26,9 +31,9 @@ services:
     image: equify/eureka-server:0.0.1-SNAPSHOT
     ports:
       - "8761:8761"
-#    depends_on:
-#      database:
-#        condition: service_healthy
+    depends_on:
+      database:
+        condition: service_healthy
 #      configserver:
 #        condition: service_started
     networks:
@@ -61,14 +66,14 @@ services:
   dealsservice:
     image: equify/deals-service:0.0.1-SNAPSHOT
     ports:
-      - "8080:8080"
+      - "8180:8080"
     depends_on:
       database:
         condition: service_healthy
       configserver:
         condition: service_started
-#      eurekaserver:
-#        condition: service_started
+      eurekaserver:
+        condition: service_started
     command: sh -c "/wait && java -jar /app.jar"
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
@@ -78,6 +83,7 @@ services:
 #      DATABASESERVER_PORT: "5433"
       ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
       WAIT_BEFORE_HOSTS: 20
+      WAIT_HOSTS: configserver:8888
       WAIT_HOSTS_TIMEOUT: 300
       WAIT_SLEEP_INTERVAL: 2
       WAIT_HOST_CONNECT_TIMEOUT: 20
@@ -107,7 +113,8 @@ services:
 #      CONFIGSERVER_PORT:   "8888"
 #      DATABASESERVER_PORT: "5433"
       ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
-      WAIT_BEFORE_HOSTS: 20
+      WAIT_BEFORE_HOSTS: 25
+      WAIT_HOSTS: dealsservice:8080
       WAIT_HOSTS_TIMEOUT: 300
       WAIT_SLEEP_INTERVAL: 2
       WAIT_HOST_CONNECT_TIMEOUT: 20
@@ -127,6 +134,10 @@ services:
         condition: service_started
       eurekaserver:
         condition: service_started
+      dealsservice:
+        condition: service_started
+      companiesservice:
+        condition: service_started
     command: sh -c "/wait && java -jar /app.jar"
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
@@ -136,6 +147,7 @@ services:
       #      EUREKASERVER_PORT: "8070"
       #      CONFIGSERVER_PORT: "8071"
       WAIT_BEFORE_HOSTS: 30
+      WAIT_HOSTS: companiesservice:8085
       WAIT_HOSTS_TIMEOUT: 300
       WAIT_SLEEP_INTERVAL: 2
       WAIT_HOST_CONNECT_TIMEOUT: 20
@@ -143,6 +155,66 @@ services:
       backend:
         aliases:
           - "gatewayserver"
+
+#  keycloak:
+#    image: jboss/keycloak
+#    restart: always
+#    depends_on:
+#      gatewayserver:
+#        condition: service_started
+#    environment:
+#      DB_VENDOR: h2
+#      KEYCLOAK_VERSION: 6.0.1
+#      KEYCLOAK_USER: admin
+#      KEYCLOAK_PASSWORD: admin
+#    volumes:
+#      - ./realm-export.json:/opt/jboss/keycloak/realm-export.json
+#    command:
+#      - "-b 0.0.0.0"
+#      - "-Dkeycloak.import=/opt/jboss/keycloak/realm-export.json"
+#      - "-Dkeycloak.profile.feature.scripts=enabled"
+#      - "-Dkeycloak.profile.feature.upload_scripts=enabled"
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      backend:
+#        aliases:
+#          - "keycloak"
+
+  postgres:
+    image: postgres
+    volumes:
+      - postgres_local:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    networks:
+      backend:
+        aliases:
+          - "postgres"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    networks:
+      backend:
+        aliases:
+          - "keycloak"
 
 networks:
   backend:
