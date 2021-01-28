@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
-
 @RestController
 public class DealsController {
 
@@ -17,13 +15,13 @@ public class DealsController {
 
 //    private ServiceConfig serviceConfig;
 
-    @RolesAllowed({"ADMIN", "USER"})
+//    @RolesAllowed({"ADMIN", "USER"})
     @GetMapping("/v1/deals")
     public Iterable<Deal> getAllDeals() {
         return dealsService.getAllDeals();
     }
 
-    @RolesAllowed({"ADMIN", "USER"})
+//    @RolesAllowed({"ADMIN", "USER"})
     @GetMapping("/v1/deals/{dealId}")
     public Deal getDeal(@PathVariable String dealId) {
 
@@ -36,19 +34,19 @@ public class DealsController {
         return deal;
     }
 
-    @RolesAllowed({"ADMIN"})
+//    @RolesAllowed({"ADMIN"})
     @PostMapping("/v1/deals")
     public Deal createDeal(@RequestBody Deal deal) {
         return dealsService.createDeal(deal);
     }
 
-    @RolesAllowed({"ADMIN"})
+//    @RolesAllowed({"ADMIN"})
     @PutMapping("/v1/deals/{dealId}")
     public Deal updateDeal(@RequestBody Deal deal, @PathVariable String dealId) {
         return dealsService.updateDeal(deal, dealId);
     }
 
-    @RolesAllowed({"ADMIN"})
+//    @RolesAllowed({"ADMIN"})
     @DeleteMapping("/v1/deals/{dealId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDeal(@PathVariable String dealId) {

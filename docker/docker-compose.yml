@@ -156,65 +156,43 @@ services:
         aliases:
           - "gatewayserver"
 
-#  keycloak:
-#    image: jboss/keycloak
-#    restart: always
-#    depends_on:
-#      gatewayserver:
-#        condition: service_started
+
+# AUTHENTICATION SECTION
+#
+#  postgres:
+#    image: postgres
+#    volumes:
+#      - postgres_local:/var/lib/postgresql/data
 #    environment:
-#      DB_VENDOR: h2
-#      KEYCLOAK_VERSION: 6.0.1
+#      POSTGRES_DB: keycloak
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: keycloak
+#    networks:
+#      backend:
+#        aliases:
+#          - "postgres"
+#
+#  keycloak:
+#    image: quay.io/keycloak/keycloak:latest
+#    environment:
+#      DB_VENDOR: POSTGRES
+#      DB_ADDR: postgres
+#      DB_DATABASE: keycloak
+#      DB_USER: keycloak
+#      DB_SCHEMA: public
+#      DB_PASSWORD: keycloak
 #      KEYCLOAK_USER: admin
 #      KEYCLOAK_PASSWORD: admin
-#    volumes:
-#      - ./realm-export.json:/opt/jboss/keycloak/realm-export.json
-#    command:
-#      - "-b 0.0.0.0"
-#      - "-Dkeycloak.import=/opt/jboss/keycloak/realm-export.json"
-#      - "-Dkeycloak.profile.feature.scripts=enabled"
-#      - "-Dkeycloak.profile.feature.upload_scripts=enabled"
+#      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+#      #JDBC_PARAMS: "ssl=true"
 #    ports:
-#      - "8080:8080"
+#      - 8080:8080
+#    depends_on:
+#      - postgres
 #    networks:
 #      backend:
 #        aliases:
 #          - "keycloak"
-
-  postgres:
-    image: postgres
-    volumes:
-      - postgres_local:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-    networks:
-      backend:
-        aliases:
-          - "postgres"
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: keycloak
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
-      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
-      #JDBC_PARAMS: "ssl=true"
-    ports:
-      - 8080:8080
-    depends_on:
-      - postgres
-    networks:
-      backend:
-        aliases:
-          - "keycloak"
 
 networks:
   backend:

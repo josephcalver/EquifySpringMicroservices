@@ -99,8 +99,8 @@ public class DealsService {
     private Company retrieveCompanyInfo(String companyId) {
 
 //        Company company = companiesFeignClient.getCompany(companyId);
-//        Company company = companiesDiscoveryClient.getCompany(companyId);
-        Company company = companiesRestTemplateClient.getCompany(companyId);
+        Company company = companiesDiscoveryClient.getCompany(companyId);
+//        Company company = companiesRestTemplateClient.getCompany(companyId);
 
         return company;
     }
