@@ -6,25 +6,12 @@ spring:
     name: gatewayserver
   cloud:
     gateway:
-#      routes:
-#        - id: dealsservice
-#          uri: lb://dealsservice
-#          predicates:
-#            - Path=/deals/**
-#          filters:
-#            - RewritePath=/deals/(?<path>.*), /$\{path}
-#            - RemoveRequestHeader= Cookie,Set-Cookie
-#        - id: licensing-service
-#          uri: lb://licensing-service
-#          predicates:
-#            - Path=/license/**
-#          filters:
-#            - RewritePath=/license/(?<path>.*), /$\{path}
-#            - RemoveRequestHeader= Cookie,Set-Cookie
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - RemoveRequestHeader= Cookie,Set-Cookie
 
 
 eureka:
