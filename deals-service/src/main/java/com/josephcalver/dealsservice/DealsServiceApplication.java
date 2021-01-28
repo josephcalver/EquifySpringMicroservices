@@ -1,11 +1,17 @@
 package com.josephcalver.dealsservice;
 
+import com.josephcalver.dealsservice.events.model.CompanyChangeModel;
 import com.josephcalver.dealsservice.utils.UserContextInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.client.RestTemplate;
@@ -19,8 +25,11 @@ import java.util.Locale;
 //@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 @RefreshScope
 @EnableFeignClients
+@EnableBinding(Sink.class)
 @SpringBootApplication//(exclude={DataSourceAutoConfiguration.class, XADataSourceAutoConfiguration.class})
 public class DealsServiceApplication {
+
+	private static final Logger logger = LoggerFactory.getLogger(DealsServiceApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(DealsServiceApplication.class, args);
@@ -41,7 +50,6 @@ public class DealsServiceApplication {
 		return messageSource;
 	}
 
-	@SuppressWarnings("unchecked")
 	@LoadBalanced
 	@Bean
 	public RestTemplate getRestTemplate() {
@@ -55,6 +63,11 @@ public class DealsServiceApplication {
 			template.setInterceptors(interceptors);
 		}
 		return template;
+	}
+
+	@StreamListener(Sink.INPUT)
+	public void loggerSink(CompanyChangeModel companyChange) {
+		logger.debug("Received {} event for the organization id {}", companyChange.getAction(), companyChange.getCompanyId());
 	}
 
 }

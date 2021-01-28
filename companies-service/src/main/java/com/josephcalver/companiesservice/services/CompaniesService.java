@@ -1,10 +1,13 @@
 package com.josephcalver.companiesservice.services;
 
+import com.josephcalver.companiesservice.events.source.SimpleSourceBean;
 import com.josephcalver.companiesservice.exceptions.CompanyNotFoundException;
 import com.josephcalver.companiesservice.models.Company;
 import com.josephcalver.companiesservice.repositories.CompaniesRepository;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +17,13 @@ import java.util.List;
 @Service
 public class CompaniesService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CompaniesService.class);
+
     @Autowired
     private CompaniesRepository companiesRepository;
+
+    @Autowired
+    private SimpleSourceBean simpleSourceBean;
 
     public CompaniesService(CompaniesRepository companiesRepository) {
         this.companiesRepository = companiesRepository;
@@ -38,7 +46,9 @@ public class CompaniesService {
     @CircuitBreaker(name = "companiesService", fallbackMethod = "companyDataUnavailable")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
     public Company getCompany(String companyId) {
-        return companiesRepository.findByCompanyId(companyId);
+        Company company = companiesRepository.findByCompanyId(companyId);
+        simpleSourceBean.publishCompanyChange("GET", company.getCompanyId());
+        return company;
     }
 
     private Company companyDataUnavailable() {
@@ -50,7 +60,9 @@ public class CompaniesService {
     @CircuitBreaker(name = "companiesService", fallbackMethod = "companyDataUnavailable")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
     public Company createCompany(Company company) {
-        return companiesRepository.save(company);
+        Company newCompany = companiesRepository.save(company);
+        simpleSourceBean.publishCompanyChange("CREATED", newCompany.getCompanyId());
+        return newCompany;
     }
 
     @CircuitBreaker(name = "companiesService", fallbackMethod = "companyDataUnavailable")
@@ -70,13 +82,18 @@ public class CompaniesService {
         existingCompany.setSector(company.getSector());
         existingCompany.setEnterpriseValue(company.getEnterpriseValue());
 
-        return companiesRepository.save(existingCompany);
+        Company updatedCompany = companiesRepository.save(existingCompany);
+
+        simpleSourceBean.publishCompanyChange("UPDATED", updatedCompany.getCompanyId());
+
+        return updatedCompany;
     }
 
     @CircuitBreaker(name = "companiesService")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL)
     public void deleteCompany(String companyId) {
         companiesRepository.deleteByCompanyId(companyId);
+        simpleSourceBean.publishCompanyChange("DELETED", companyId);
     }
 
 }
