@@ -94,7 +94,7 @@ services:
         aliases:
           - "kafka"
 
-  redisserver:
+  redis:
     image: redis:alpine
     container_name: redis
     ports:

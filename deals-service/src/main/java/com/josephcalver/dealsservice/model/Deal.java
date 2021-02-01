@@ -14,7 +14,7 @@ public class Deal {
     private String dealId;
 
     @Column(name = "company_id", nullable = false)
-    private String companyId;
+    private String id;
 
     @Column(name = "deal_name", nullable = false)
     private String dealName;
@@ -65,7 +65,7 @@ public class Deal {
     public Deal(String dealId, String companyId, String dealName, String dealType, String originationDate,
                 String dealStatus, String fundInvesting, String dealTeamLead, int equityRequired, String dealCurrency) {
         this.dealId = dealId;
-        this.companyId = companyId;
+        this.id = companyId;
         this.dealName = dealName;
         this.dealType = dealType;
         this.originationDate = originationDate;
@@ -80,7 +80,7 @@ public class Deal {
                 String dealStatus, String fundInvesting, String dealTeamLead, int equityRequired, String dealCurrency,
                 String companyName, int founded, String country, String region, String sector, BigDecimal enterpriseValue) {
         this.dealId = dealId;
-        this.companyId = companyId;
+        this.id = companyId;
         this.dealName = dealName;
         this.dealType = dealType;
         this.originationDate = originationDate;
@@ -106,11 +106,11 @@ public class Deal {
     }
 
     public String getCompanyId() {
-        return companyId;
+        return id;
     }
 
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setCompanyId(String id) {
+        this.id = id;
     }
 
     public String getDealName() {

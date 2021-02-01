@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CompaniesService {
@@ -45,9 +46,9 @@ public class CompaniesService {
 
     @CircuitBreaker(name = "companiesService", fallbackMethod = "companyDataUnavailable")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
-    public Company getCompany(String companyId) {
-        Company company = companiesRepository.findByCompanyId(companyId);
-        simpleSourceBean.publishCompanyChange("GET", company.getCompanyId());
+    public Optional<Company> getCompany(String companyId) {
+        Optional<Company> company = companiesRepository.findById(companyId);
+        simpleSourceBean.publishCompanyChange("GET", companyId);
         return company;
     }
 
@@ -61,7 +62,7 @@ public class CompaniesService {
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
     public Company createCompany(Company company) {
         Company newCompany = companiesRepository.save(company);
-        simpleSourceBean.publishCompanyChange("CREATED", newCompany.getCompanyId());
+        simpleSourceBean.publishCompanyChange("CREATED", newCompany.getId());
         return newCompany;
     }
 
@@ -69,22 +70,22 @@ public class CompaniesService {
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
     public Company updateCompany(String companyId, Company company) {
 
-        Company existingCompany = companiesRepository.findByCompanyId(companyId);
+        Optional<Company> existingCompany = companiesRepository.findById(companyId);
 
         if (existingCompany == null) {
             throw new CompanyNotFoundException(companyId);
         }
 
-        existingCompany.setCompanyName(company.getCompanyName());
-        existingCompany.setFounded(company.getFounded());
-        existingCompany.setCountry(company.getCountry());
-        existingCompany.setRegion(company.getRegion());
-        existingCompany.setSector(company.getSector());
-        existingCompany.setEnterpriseValue(company.getEnterpriseValue());
+        existingCompany.get().setCompanyName(company.getCompanyName());
+        existingCompany.get().setFounded(company.getFounded());
+        existingCompany.get().setCountry(company.getCountry());
+        existingCompany.get().setRegion(company.getRegion());
+        existingCompany.get().setSector(company.getSector());
+        existingCompany.get().setEnterpriseValue(company.getEnterpriseValue());
 
-        Company updatedCompany = companiesRepository.save(existingCompany);
+        Company updatedCompany = companiesRepository.save(existingCompany.get());
 
-        simpleSourceBean.publishCompanyChange("UPDATED", updatedCompany.getCompanyId());
+        simpleSourceBean.publishCompanyChange("UPDATED", updatedCompany.getId());
 
         return updatedCompany;
     }
@@ -92,7 +93,7 @@ public class CompaniesService {
     @CircuitBreaker(name = "companiesService")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL)
     public void deleteCompany(String companyId) {
-        companiesRepository.deleteByCompanyId(companyId);
+        companiesRepository.deleteById(companyId);
         simpleSourceBean.publishCompanyChange("DELETED", companyId);
     }
 

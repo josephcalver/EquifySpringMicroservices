@@ -1,10 +1,15 @@
 package com.josephcalver.dealsservice.model;
 
+import org.springframework.data.redis.core.RedisHash;
+
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
+@RedisHash("companies")
 public class Company {
 
-    private String companyId;
+    @Id
+    private String id;
 
     private String companyName;
 
@@ -23,7 +28,7 @@ public class Company {
     }
 
     public Company(String companyId, String companyName, int founded, String country, String region, String sector, BigDecimal enterpriseValue) {
-        this.companyId = companyId;
+        this.id = companyId;
         this.companyName = companyName;
         this.founded = founded;
         this.country = country;
@@ -32,12 +37,12 @@ public class Company {
         this.enterpriseValue = enterpriseValue;
     }
 
-    public String getCompanyId() {
-        return companyId;
+    public String getId() {
+        return id;
     }
 
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCompanyName() {

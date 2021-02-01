@@ -5,6 +5,8 @@ import com.josephcalver.companiesservice.services.CompaniesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 public class CompaniesController {
 
@@ -21,7 +23,7 @@ public class CompaniesController {
     }
 
     @GetMapping("/v1/companies/{companyId}")
-    public Company getCompany(@PathVariable String companyId) {
+    public Optional<Company> getCompany(@PathVariable String companyId) {
         return companiesService.getCompany(companyId);
     }
 
