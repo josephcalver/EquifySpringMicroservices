@@ -3,6 +3,8 @@ version: '2.1'
 volumes:
   postgres_local:
     driver: local
+  esdata1:
+    driver: local
 
 services:
 
@@ -26,43 +28,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  eurekaserver:
-    image: equify/eureka-server:0.0.1-SNAPSHOT
-    ports:
-      - "8761:8761"
-    depends_on:
-      database:
-        condition: service_healthy
-#      configserver:
-#        condition: service_started
-    networks:
-      backend:
-        aliases:
-          - "eurekaserver"
-
-  configserver:
-    image: equify/config-server:0.0.1-SNAPSHOT
-    ports:
-      - "8888:8888"
-    depends_on:
-#      database:
-#        condition: service_healthy
-      eurekaserver:
-        condition: service_started
-    command: sh -c "/wait && java -jar /app.jar"
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka/
-      - ENCRYPT_KEY=fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
-#      - WAIT_BEFORE_HOSTS=5
-      - WAIT_HOSTS=eurekaserver:8761
-      - WAIT_HOSTS_TIMEOUT=300
-      - WAIT_SLEEP_INTERVAL=5
-      - WAIT_HOST_CONNECT_TIMEOUT=30
-    networks:
-      backend:
-        aliases:
-          - "configserver"
 
   zookeeper:
     image: wurstmeister/zookeeper:latest
@@ -104,6 +69,102 @@ services:
         aliases:
           - "redis"
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9300:9300
+      - 9200:9200
+    networks:
+      backend:
+        aliases:
+          - "elasticsearch"
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.7.0
+    container_name: logstash
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    volumes:
+      - ./config:/etc/logstash/conf.d
+    ports:
+      - "5000:5000"
+    depends_on:
+      elasticsearch:
+        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "logstash"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: "http://elasticsearch:9300"
+    ports:
+      - 5601:5601
+    depends_on:
+      logstash:
+        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "kibana"
+
+  eurekaserver:
+    image: equify/eureka-server:0.0.1-SNAPSHOT
+    ports:
+      - "8761:8761"
+    depends_on:
+      database:
+        condition: service_healthy
+#      configserver:
+#        condition: service_started
+    environment:
+      - WAIT_BEFORE_HOSTS=30
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=10
+    networks:
+      backend:
+        aliases:
+          - "eurekaserver"
+
+  configserver:
+    image: equify/config-server:0.0.1-SNAPSHOT
+    ports:
+      - "8888:8888"
+    depends_on:
+#      database:
+#        condition: service_healthy
+      eurekaserver:
+        condition: service_started
+    command: sh -c "/wait && java -jar /app.jar"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eurekaserver:8761/eureka/
+      - ENCRYPT_KEY=fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+      - WAIT_BEFORE_HOSTS=35
+      - WAIT_HOSTS=eurekaserver:8761
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=10
+    networks:
+      backend:
+        aliases:
+          - "configserver"
+
   dealsservice:
     image: equify/deals-service:0.0.1-SNAPSHOT
     ports:
@@ -117,6 +178,12 @@ services:
         condition: service_started
       kafka:
         condition: service_started
+      logstash:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+      kibana:
+        condition: service_started
     command: sh -c "/wait && java -jar /app.jar"
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
@@ -125,11 +192,11 @@ services:
 #      CONFIGSERVER_PORT:   "8888"
 #      DATABASESERVER_PORT: "5433"
       ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
-      WAIT_BEFORE_HOSTS: 25
-      WAIT_HOSTS: configserver:8888, kafka:9092, zookeeper:2181
+      WAIT_BEFORE_HOSTS: 45
+      WAIT_HOSTS: configserver:8888, kafka:9092, zookeeper:2181 #, logstash:5000
       WAIT_HOSTS_TIMEOUT: 300
-      WAIT_SLEEP_INTERVAL: 2
-      WAIT_HOST_CONNECT_TIMEOUT: 20
+      WAIT_SLEEP_INTERVAL: 5
+      WAIT_HOST_CONNECT_TIMEOUT: 10
     networks:
       backend:
         aliases:
@@ -156,11 +223,11 @@ services:
 #      CONFIGSERVER_PORT:   "8888"
 #      DATABASESERVER_PORT: "5433"
       ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
-      WAIT_BEFORE_HOSTS: 30
+      WAIT_BEFORE_HOSTS: 50
       WAIT_HOSTS: dealsservice:8080
       WAIT_HOSTS_TIMEOUT: 300
-      WAIT_SLEEP_INTERVAL: 2
-      WAIT_HOST_CONNECT_TIMEOUT: 20
+      WAIT_SLEEP_INTERVAL: 5
+      WAIT_HOST_CONNECT_TIMEOUT: 10
     networks:
       backend:
         aliases:
@@ -189,15 +256,16 @@ services:
       ENCRYPT_KEY: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
       #      EUREKASERVER_PORT: "8070"
       #      CONFIGSERVER_PORT: "8071"
-      WAIT_BEFORE_HOSTS: 35
+      WAIT_BEFORE_HOSTS: 55
       WAIT_HOSTS: companiesservice:8085
-      WAIT_HOSTS_TIMEOUT: 300
-      WAIT_SLEEP_INTERVAL: 2
-      WAIT_HOST_CONNECT_TIMEOUT: 20
+      WAIT_HOSTS_TIMEOUT: 600
+      WAIT_SLEEP_INTERVAL: 5
+      WAIT_HOST_CONNECT_TIMEOUT: 10
     networks:
       backend:
         aliases:
           - "gatewayserver"
+
 
 
 # AUTHENTICATION SECTION
