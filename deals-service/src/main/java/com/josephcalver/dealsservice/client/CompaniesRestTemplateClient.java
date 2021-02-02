@@ -1,5 +1,7 @@
 package com.josephcalver.dealsservice.client;
 
+import brave.ScopedSpan;
+import brave.Tracer;
 import com.josephcalver.dealsservice.model.Company;
 import com.josephcalver.dealsservice.repository.CompaniesRedisRepository;
 import com.josephcalver.dealsservice.utils.UserContext;
@@ -19,6 +21,9 @@ public class CompaniesRestTemplateClient {
 
     @Autowired
     CompaniesRedisRepository redisRepository;
+
+    @Autowired
+    Tracer tracer;
 
     private static final Logger logger = LoggerFactory.getLogger(CompaniesRestTemplateClient.class);
 
@@ -50,20 +55,34 @@ public class CompaniesRestTemplateClient {
     }
 
     private Company checkRedisCache(String companyId) {
+
+        ScopedSpan customSpan = tracer.startScopedSpan("readCompanyDataFromRedis");
+
         try {
             return redisRepository.findById(companyId).orElse(null);
         } catch (Exception ex) {
             logger.error("Error encountered while trying to retrieve company {} check Redis cache.  Exception {}", companyId, ex);
             return null;
+        } finally {
+            customSpan.tag("peer.service", "redis");
+            customSpan.annotate("Client received");
+            customSpan.finish();
         }
     }
 
     private void cacheOrganizationObject(Company company) {
+
+        ScopedSpan customSpan = tracer.startScopedSpan("writeCompanyDataToRedis");
+
         try {
             redisRepository.save(company);
             logger.debug("Caching company {} in Redis. Exception {}", company.getId());
         } catch (Exception ex) {
             logger.error("Unable to cache company {} in Redis. Exception {}", company.getId(), ex);
+        } finally {
+            customSpan.tag("peer.service", "redis");
+            customSpan.annotate("Client sent");
+            customSpan.finish();
         }
     }
 

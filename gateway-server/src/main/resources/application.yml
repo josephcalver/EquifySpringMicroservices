@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: gatewayserver
+  zipkin:
+    baseUrl: http://zipkin:9411
+  sleuth:
+    sampler:
+      percentage: 1
   cloud:
     gateway:
       discovery:

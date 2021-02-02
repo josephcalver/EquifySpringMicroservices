@@ -123,6 +123,22 @@ services:
         aliases:
           - "kibana"
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    depends_on:
+      elasticsearch:
+        condition: service_started
+    environment:
+      - STORAGE_TYPE=elasticsearch
+      - ES_HOSTS=elasticsearch:9300
+    ports:
+      - "9411:9411"
+    networks:
+      backend:
+        aliases:
+          - "zipkin"
+
   eurekaserver:
     image: equify/eureka-server:0.0.1-SNAPSHOT
     ports:

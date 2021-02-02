@@ -1,5 +1,7 @@
 package com.josephcalver.companiesservice.services;
 
+import brave.ScopedSpan;
+import brave.Tracer;
 import com.josephcalver.companiesservice.events.source.SimpleSourceBean;
 import com.josephcalver.companiesservice.exceptions.CompanyNotFoundException;
 import com.josephcalver.companiesservice.models.Company;
@@ -26,6 +28,9 @@ public class CompaniesService {
     @Autowired
     private SimpleSourceBean simpleSourceBean;
 
+    @Autowired
+    Tracer tracer;
+
     public CompaniesService(CompaniesRepository companiesRepository) {
         this.companiesRepository = companiesRepository;
     }
@@ -47,8 +52,27 @@ public class CompaniesService {
     @CircuitBreaker(name = "companiesService", fallbackMethod = "companyDataUnavailable")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
     public Optional<Company> getCompany(String companyId) {
-        Optional<Company> company = companiesRepository.findById(companyId);
-        simpleSourceBean.publishCompanyChange("GET", companyId);
+//        Optional<Company> company = companiesRepository.findById(companyId);
+//        simpleSourceBean.publishCompanyChange("GET", companyId);
+//        return company;
+
+        Optional<Company> company;
+
+        ScopedSpan customSpan = tracer.startScopedSpan("getCompanyDbCall");
+
+        try {
+            company = companiesRepository.findById(companyId);
+            simpleSourceBean.publishCompanyChange("GET", companyId);
+            if (!company.isPresent()) {
+                String message = String.format("Unable to find company with ID: %s", companyId);
+                logger.error(message);
+            }
+            logger.debug("Retrieved Company information: " + company.get().toString());
+        } finally {
+            customSpan.tag("peer.service", "postgres");
+            customSpan.annotate("Client received");
+            customSpan.finish();
+        }
         return company;
     }
 
