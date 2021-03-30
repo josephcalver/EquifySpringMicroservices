@@ -19,4 +19,5 @@ public class ServiceConfig{
     public String getRedisPort() {
         return redisPort;
     }
+
 }

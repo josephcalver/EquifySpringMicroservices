@@ -2,7 +2,6 @@ package com.josephcalver.companiesservice.controllers;
 
 import com.josephcalver.companiesservice.models.Company;
 import com.josephcalver.companiesservice.services.CompaniesService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -10,12 +9,11 @@ import java.util.Optional;
 @RestController
 public class CompaniesController {
 
-    @Autowired
     private CompaniesService companiesService;
 
-//    public CompaniesController(CompaniesService companiesService) {
-//        this.companiesService = companiesService;
-//    }
+    public CompaniesController(CompaniesService companiesService) {
+        this.companiesService = companiesService;
+    }
 
     @GetMapping("/v1/companies")
     public Iterable<Company> getAllCompanies() {

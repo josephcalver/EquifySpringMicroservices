@@ -27,9 +27,9 @@ public class CompaniesRestTemplateClient {
 
     private static final Logger logger = LoggerFactory.getLogger(CompaniesRestTemplateClient.class);
 
-    public Company getCompany(String companyId){
+    public Company getCompany(String companyId) {
 
-        logger.debug("In Deals Service.getOrganization: {}", UserContext.getCorrelationId());
+        logger.debug("In Deals Service.getDeal: {}", UserContext.getCorrelationId());
 
         Company company = checkRedisCache(companyId);
 

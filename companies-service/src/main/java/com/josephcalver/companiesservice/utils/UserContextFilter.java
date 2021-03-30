@@ -10,6 +10,7 @@ import java.io.IOException;
 
 @Component
 public class UserContextFilter implements Filter {
+
     private static final Logger logger = LoggerFactory.getLogger(UserContextFilter.class);
 
     @Override

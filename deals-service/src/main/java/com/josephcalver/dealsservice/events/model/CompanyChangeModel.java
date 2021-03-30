@@ -8,7 +8,6 @@ public class CompanyChangeModel {
     private String correlationId;
 
     public CompanyChangeModel(String type, String action, String companyId, String correlationId) {
-        super();
         this.type = type;
         this.action = action;
         this.companyId = companyId;

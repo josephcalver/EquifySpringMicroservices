@@ -106,4 +106,5 @@ public class Company {
     public String toString() {
         return this.companyName;
     }
+
 }

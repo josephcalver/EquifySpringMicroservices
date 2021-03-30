@@ -230,4 +230,5 @@ public class Deal {
     public String toString() {
         return this.dealName;
     }
+
 }

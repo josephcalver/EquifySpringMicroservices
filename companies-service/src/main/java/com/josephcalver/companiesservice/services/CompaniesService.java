@@ -52,9 +52,6 @@ public class CompaniesService {
     @CircuitBreaker(name = "companiesService", fallbackMethod = "companyDataUnavailable")
     @Bulkhead(name = "bulkheadCompaniesService", type = Bulkhead.Type.THREADPOOL, fallbackMethod = "companyDataUnavailable")
     public Optional<Company> getCompany(String companyId) {
-//        Optional<Company> company = companiesRepository.findById(companyId);
-//        simpleSourceBean.publishCompanyChange("GET", companyId);
-//        return company;
 
         Optional<Company> company;
 

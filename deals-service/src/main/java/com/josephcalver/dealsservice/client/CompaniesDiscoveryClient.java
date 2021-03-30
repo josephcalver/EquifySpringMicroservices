@@ -13,10 +13,11 @@ public class CompaniesDiscoveryClient {
     @Autowired
     RestTemplate restTemplate;
 
-    public Company getCompany(String companyId){
+    public Company getCompany(String companyId) {
+
         ResponseEntity<Company> restExchange = restTemplate.exchange(
-                        "http://companiesservice/v1/companies/{companyId}",
-                        HttpMethod.GET, null, Company.class, companyId);
+                "http://companiesservice/v1/companies/{companyId}",
+                HttpMethod.GET, null, Company.class, companyId);
 
         return restExchange.getBody();
     }

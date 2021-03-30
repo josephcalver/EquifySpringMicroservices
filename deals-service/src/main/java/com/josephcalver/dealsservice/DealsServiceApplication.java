@@ -23,11 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-//@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 @RefreshScope
 @EnableFeignClients
 //@EnableBinding(Sink.class)
-@SpringBootApplication//(exclude={DataSourceAutoConfiguration.class, XADataSourceAutoConfiguration.class})
+@SpringBootApplication
 public class DealsServiceApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(DealsServiceApplication.class);

@@ -17,11 +17,11 @@ public class SimpleSourceBean {
     private static final Logger logger = LoggerFactory.getLogger(SimpleSourceBean.class);
 
     @Autowired
-    public SimpleSourceBean(Source source){
+    public SimpleSourceBean(Source source) {
         this.source = source;
     }
 
-    public void publishCompanyChange(String action, String companyId){
+    public void publishCompanyChange(String action, String companyId) {
         logger.debug("Sending Kafka message {} for Company Id: {}", action, companyId);
         CompanyChangeModel change =  new CompanyChangeModel(
                 CompanyChangeModel.class.getTypeName(),

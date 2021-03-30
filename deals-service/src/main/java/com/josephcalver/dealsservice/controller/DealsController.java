@@ -3,17 +3,19 @@ package com.josephcalver.dealsservice.controller;
 import com.josephcalver.dealsservice.exception.DealNotFoundException;
 import com.josephcalver.dealsservice.model.Deal;
 import com.josephcalver.dealsservice.service.DealsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class DealsController {
 
-    @Autowired
     private DealsService dealsService;
+    //    private ServiceConfig serviceConfig;
 
-//    private ServiceConfig serviceConfig;
+    public DealsController(DealsService dealsService) {
+        this.dealsService = dealsService;
+    }
+
 
 //    @RolesAllowed({"ADMIN", "USER"})
     @GetMapping("/v1/deals")
